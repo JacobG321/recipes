@@ -23,13 +23,13 @@
 
         <div class="d-flex justify-content-center text-center">
             <form action="/publish_new_recipe" method="POST">
-                {% with messages = get_flashed_messages() %}     
-                    {% if messages %}                            
-                        {% for message in messages %}            
-                        <p>{{message}}</p>                   
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+                {% with messages = get_flashed_messages(category_filter=['recipe']) %}     
+                {% if messages %}                            
+                    {% for message in messages %}            
+                    <p>{{message}}</p>                   
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
                 <div class="row d-flex align-items-center">
                     <div class="col">
                         <label for="name">Name</label>
@@ -58,12 +58,15 @@
                     </div>
                 </div>
         
-                <div class="row">            
-                    <label for="under">Under 30 minutes?</label>
-                    <label for="yes">Yes</label>
-                    <input type="radio" name="under" id="yes" value="yes">
-                    <label for="no">No</label>
-                    <input type="radio" name="under" id="no" value="no">
+                <div class="row">
+                    <fieldset>
+                        <legend>Does it take less than 30 minutes to make?</legend>
+                            <label for="yes">Yes</label>
+                            <input type="radio" name='under' value="yes" id="yes">
+                            <label for="no">No</label>
+                            <input type="radio" name='under' value="no" id="no">
+                            <!-- if no button is selected, it does not exist -->
+                    </fieldset>
                 </div>
 
                 <button type="submit">Submit</button>

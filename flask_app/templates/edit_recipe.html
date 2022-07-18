@@ -58,12 +58,15 @@
                     </div>
                 </div>
         
-                <div class="row">            
-                    <label for="under">Under 30 minutes?</label>
-                    <label for="yes">Yes</label>
-                    <input type="radio" name="under" id="yes" value='{{this_recipe.under}}'>
-                    <label for="no">No</label>
-                    <input type="radio" name="under" id="no" value='{{this_recipe.under}}'>
+                <div class="row">
+                    <fieldset>
+                        <legend>Does it take less than 30 minutes to make?</legend>
+                            <label for="yes">Yes</label>
+                            <input type="radio" name='under' value="yes" id="yes">
+                            <label for="no">No</label>
+                            <input type="radio" name='under' value="no" id="no">
+                            <!-- if no button is selected, it does not exist -->
+                    </fieldset>
                 </div>
 
                 <button type="submit">Submit</button>

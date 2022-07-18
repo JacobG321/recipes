@@ -1,5 +1,6 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 from flask import flash
+from flask_app.models import user
 
 
 class Recipe:
@@ -14,6 +15,7 @@ class Recipe:
         self.date_made = data['date_made']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
+        self.creator = None
 
     @classmethod
     def save_recipe(cls, data):
@@ -23,13 +25,24 @@ class Recipe:
 
     @classmethod
     def get_recipe_by_id(cls,data):
-        query = "SELECT * FROM recipes WHERE id = %(id)s"
+        query = "SELECT * FROM recipes JOIN users ON users.id = recipes.user_id WHERE recipes.id = %(id)s"
         results = connectToMySQL(cls.db).query_db(query, data)
         if len(results) == 0:
             return None
         else:
-            return cls(results[0])
-            #might need to join users to recipes to get username
+            recipe = cls(results[0])
+            user_data = {
+                "id":results[0]['users.id'],
+                "first_name":results[0]['first_name'],
+                "last_name":results[0]['last_name'],
+                "email":results[0]['email'],
+                "password":results[0]['password'],
+                "created_at":results[0]['users.created_at'],
+                "updated_at":results[0]['users.updated_at']
+            }
+            recipe_maker = user.User(user_data)
+            recipe.creator = recipe_maker
+            return recipe
 
     @classmethod
     def edit_recipe(cls, data):
@@ -55,18 +68,18 @@ class Recipe:
     def new_recipe_validation(data):
         is_valid = True
         if len(data['name']) < 3:
-            flash('Name must be 3 or more characters')
+            flash('Name must be 3 or more characters', "recipe")
             is_valid = False
         if len(data['description']) < 3:
-            flash('Description must be 3 or more characters')
+            flash('Description must be 3 or more characters', "recipe")
             is_valid = False
         if len(data['instructions']) < 3:
-            flash('Instructions must be 3 or more characters')
+            flash('Instructions must be 3 or more characters', "recipe")
             is_valid = False
         if len(data['date_made']) < 8:
-            flash('Please enter date cooked or made')
+            flash('Please enter date cooked or made', "recipe")
             is_valid = False
-        # if len(data['under']) < 2:
-        #     flash('Is it over/under 30 minutes?')
-        #     is_valid = False
+        if not data['under']:
+            flash('Is it over/under 30 minutes?', 'recipe')
+            is_valid = False
         return is_valid

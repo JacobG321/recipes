@@ -20,7 +20,7 @@
             <div class="col-lg-3 col-sm-2 ">
                 <form action="/new_account" method="POST" class="bg-info bg-gradient text-center pb-2">
                     <h2 class="text-center">Register</h2>
-                    {% with messages = get_flashed_messages() %}     
+                    {% with messages = get_flashed_messages(category_filter=['register']) %}     
                         {% if messages %}                            
                             {% for message in messages %}            
                             <p>{{message}}</p>                   
@@ -52,14 +52,14 @@
             </div>
             <div class="col-lg-3 col-sm-2">
                 <form action="/signing_in" method="POST" class="bg-info bg-gradient text-center">
-                    {% with messages = get_flashed_messages() %}     
+                    <h2 class="text-center">Sign In</h2>
+                    {% with messages = get_flashed_messages(category_filter=['sign_in']) %}     
                         {% if messages %}                            
                             {% for message in messages %}            
                             <p>{{message}}</p>                   
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
-                    <h2 class="text-center">Sign In</h2>
                     <div class="row d-flex justify-content-center">
                         <label for="email">Email:</label>
                         <input type="text" name="email" class="col-lg-6 col-sm-4"> 

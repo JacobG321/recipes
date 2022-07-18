@@ -45,10 +45,10 @@ def signing_in():
     user_in_db = User.get_user_by_email(data)
     
     if not user_in_db:
-        flash('Invalid Email/Password')
+        flash('Invalid Email/Password', 'sign_in')
         return redirect('/')
     if not bcrypt.check_password_hash(user_in_db.password, request.form['password']):
-        flash('Invalid Email/Password')
+        flash('Invalid Email/Password', 'sign_in')
         return redirect('/')
     session['user_id'] = user_in_db.id
     return redirect('/recipes')
@@ -91,8 +91,11 @@ def publish_new_recipe():
         'description': request.form['description'],
         'instructions': request.form['instructions'],
         'date_made': request.form['date_made'],
-        'under': request.form['under']
+        'under': request.form.get('under')
+        # .get will return none if nothing is selected instead of crashing the program
     }
+    if not Recipe.new_recipe_validation(data):
+        return redirect('/recipes/new')
     Recipe.save_recipe(data)
     return redirect('/recipes')
 
@@ -119,20 +122,30 @@ def publish_edit_recipe(id):
         'description': request.form['description'],
         'instructions': request.form['instructions'],
         'date_made': request.form['date_made'],
-        'under': request.form['under']
+        'under': request.form.get('under')
     }
     if not Recipe.new_recipe_validation(data):
-        return redirect('/recipes/edit/<int:id>')
+        return redirect(f'/recipes/edit/{id}')
     Recipe.edit_recipe(data)
     return redirect('/recipes')
     
 
 # View recipe
 @app.route('/recipes/view/<int:id>')
-def view_recipe():
+def view_recipe(id):
     if "user_id" not in session:
         return redirect('/')
-    pass
+
+    recipe_data = {
+        'id':id
+    }
+
+    user_data = {
+        'id':session['user_id']
+    }
+    user = User.get_user_by_id(user_data)
+    recipe = Recipe.get_recipe_by_id(recipe_data)
+    return render_template('view_one_recipe.html', recipe=recipe, user=user)
 
 @app.route('/recipes/delete/<int:id>')
 def delete(id):
